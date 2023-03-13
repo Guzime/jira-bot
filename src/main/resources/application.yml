@@ -7,8 +7,8 @@ logging:
 #      hibernate:
 #        type: trace
 bot:
-  name: JiraSubscriptionBot
-  token: 5938985813:AAGq_y_6-x9NrI4YiuxqtAdxh0tzh4yeDxo
+  name: JiraSubscribeTestingBot
+  token: 6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4
 
 log4j:
   appender:

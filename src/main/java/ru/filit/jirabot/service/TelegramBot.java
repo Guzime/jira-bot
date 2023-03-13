@@ -21,7 +21,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private BotConfig config;
     @Autowired
-    private HandlerMessage handlerMessage;
+    private HandleMessage handleMessage;
     @Override
     public String getBotUsername() {
         return config.getBotName();
@@ -40,7 +40,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Message message = update.getMessage();
                 log.info("Get message: {}", message);
                 log.info("Get message: {} , from user: {}", message.getText(), message.getFrom().getUserName());
-                execute(handlerMessage.parseCommand(message));
+                //execute(handlerMessage.parseCommand(message));
+                execute(handleMessage.parseCommand(message));
             }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
