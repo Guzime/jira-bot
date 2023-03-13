@@ -1,0 +1,14 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ru.filit.micdeliveryfreetimeslot" level="DEBUG"/>
+
+    <root level="INFO" name="ru.filit.micdeliveryfreetimeslot" >
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

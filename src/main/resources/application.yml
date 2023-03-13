@@ -1,0 +1,48 @@
+server:
+  port: '8082'
+logging:
+  config: 'classpath:logback.xml'
+#  level:
+#    org:
+#      hibernate:
+#        type: trace
+bot:
+  name: JiraSubscriptionBot
+  token: 5938985813:AAGq_y_6-x9NrI4YiuxqtAdxh0tzh4yeDxo
+
+log4j:
+  appender:
+    myappender:
+      encoding: UTF-8
+
+spring:
+  datasource:
+    url: 'jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}'
+    username: ${DB_LOGIN:postgres}
+    password: ${DB_PASSWORD:postgres}
+  flyway:
+    baseline-on-migrate: true
+    default-schema: ${FLYWAY_DEF_SCHEMA:jira}
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        use_sql_comments: false
+        format_sql: false
+
+url:
+  jira:
+    issue:
+      info: 'https://jirahq.rosbank.rus.socgen:8443/rest/api/2/issue'
+      info-fil-it: 'https://jira.phoenixit.ru/rest/api/2/issue'
+
+
+jira:
+  rosbank:
+    username: 'rbxMOS001670'
+    password: 'Qwerty123456'
+    url: 'https://jirahq.rosbank.rus.socgen:8443'
+  fil-it:
+    username: 'ntolmachev'
+    password: 'Forblachok1!'
+    url: 'https://jira.phoenixit.ru'
