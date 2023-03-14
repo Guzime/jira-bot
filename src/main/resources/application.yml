@@ -31,6 +31,8 @@ spring:
         format_sql: false
 
 url:
+  notification-app:
+    chat: http://localhost:9561/
   jira:
     issue:
       info: 'https://jirahq.rosbank.rus.socgen:8443/rest/api/2/issue'

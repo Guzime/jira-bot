@@ -13,7 +13,7 @@ public class JiraClient {
     private String password;
     private String jiraUrl;
     private JiraRestClient restClient;
-
+/*
     public JiraClient(@Value("${jira.rosbank.username}")String username,
                       @Value("${jira.rosbank.password}")String password,
                       @Value("${jira.rosbank.url}")String jiraUrl) {
@@ -26,7 +26,7 @@ public class JiraClient {
     private JiraRestClient getJiraRestClient() {
         return new AsynchronousJiraRestClientFactory()
                 .createWithBasicHttpAuthentication(getJiraUri(), this.username, this.password);
-    }
+    }*/
     private URI getJiraUri() {
         return URI.create(this.jiraUrl);
     }

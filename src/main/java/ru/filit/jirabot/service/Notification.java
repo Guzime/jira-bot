@@ -31,7 +31,7 @@ public class Notification {
     private final JiraClient jiraClient;
     private final CommentRepository commentRepository;
 
-    @Scheduled(fixedDelay = 600000)
+
     public void scheduleFixedDelayTask() {
         try {
             List<IssueInfo> issues = issueRepository.findAll();

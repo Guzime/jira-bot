@@ -1,4 +1,3 @@
 url:
-  jira:
-    issue:
-      info: http://localhost:9561/
+  notification-app:
+    chat: http://localhost:9561/
