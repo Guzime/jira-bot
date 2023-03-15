@@ -9,7 +9,7 @@ import ru.filit.jirabot.model.dto.ResponseResult;
 @Data
 @Builder
 @AllArgsConstructor
-public class Chat {
+public class ChatDto {
     @JsonProperty("data")
     private ChatInfo data;
     @JsonProperty("result")

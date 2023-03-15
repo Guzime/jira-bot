@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "code": "IN-229",
+      "status": "Backlog"
+    },
+    {
+      "code": "KMB-892",
+      "status": "Testing"
+    },
+    {
+      "code": "IN-243",
+      "status": "В работе"
+    }
+  ],
+  "result": {
+    "timestamp": "2023-03-01T15:38:40.793",
+    "status": 200,
+    "code": "JBOT_001",
+    "message": "Success",
+    "id": "73ef43db-25ea-4282-b124-9eda69430e3a"
+  }
+}

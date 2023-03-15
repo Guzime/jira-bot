@@ -1,11 +1,24 @@
 server:
-  port: '8082'
-logging:
-  config: 'classpath:logback.xml'
+  port: '8081'
 #  level:
 #    org:
 #      hibernate:
 #        type: trace
+logging:
+  config: 'classpath:logback.xml'
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+        ws:
+          client:
+            MessageTracing:
+              received: TRACE
+          server:
+            MessageTracing:
+              received: TRACE
 bot:
   name: JiraSubscribeTestingBot
   token: 6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4
