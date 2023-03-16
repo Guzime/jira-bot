@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ru.filit.jirabot.config.FeignConfig;
 import ru.filit.jirabot.model.dto.chat.ChatDto;
 import ru.filit.jirabot.model.dto.chat.ChatInfo;
+import ru.filit.jirabot.model.dto.issue.IssueInfo;
+import ru.filit.jirabot.model.dto.issue.IssueInfoDto;
 import ru.filit.jirabot.model.dto.issue.IssueListDto;
 
 @FeignClient(name="NotificationClientApp", url = "${url.notification-app.chat}", configuration = FeignConfig.class)
@@ -23,4 +25,7 @@ public interface NotificationClientApp {
 
     @GetMapping("/subscribe/list/{chatId}")
     IssueListDto getIssues(@PathVariable("chatId") String chatId);
+
+    @GetMapping("/unsubscribe/{code}")
+    IssueInfoDto unsubscribeIssue(@PathVariable("code") String code);
 }
