@@ -29,7 +29,7 @@ import static org.springframework.util.StreamUtils.copyToString;
 @ActiveProfiles("test")
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {WireMockConfiguration.class})
-public class HandleMessageTests {
+public class HandlerMessageTests {
     public static final String TELEGRAM_ID = "231852649";
     public static final String SUBSCRIBE_LIST_MESSAGE = "Этот чат подписан на тикеты:\n" +
             "[IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`\n" +
@@ -42,7 +42,7 @@ public class HandleMessageTests {
     private NotificationClientApp feignClient;
 
     @Autowired
-    private HandleMessage handleMessage;
+    private HandlerMessage handlerMessage;
 
 
     @Test
@@ -57,7 +57,7 @@ public class HandleMessageTests {
     void test2() throws IOException {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        ChatDto chat = handleMessage.fetchChatStatus(getInputMessage());
+        ChatDto chat = handlerMessage.fetchChatStatus(getInputMessage());
         assertEquals(TELEGRAM_ID, chat.getData().getTelegramId());
     }
 
@@ -68,7 +68,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-not-found.json");
         setResponse(WireMock.post(WireMock.urlEqualTo("/chat")), "payload/response-chat-data-success.json");
 
-        ChatDto chat = handleMessage.fetchChatStatus(getInputMessage());
+        ChatDto chat = handlerMessage.fetchChatStatus(getInputMessage());
         assertEquals(TELEGRAM_ID, chat.getData().getTelegramId());
     }
 
@@ -78,7 +78,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("/subscribe"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe"));
         assertEquals(CustomMessage.START_SUBSCRIBE_MESSAGE.getText(), sendMessage.getText());
     }
 
@@ -88,7 +88,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/list/" + TELEGRAM_ID)), "payload/response-chat-list-data-many.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("/subscribe_list"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe_list"));
         assertEquals(SUBSCRIBE_LIST_MESSAGE, sendMessage.getText());
     }
 
@@ -98,7 +98,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("/unsubscribe"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/unsubscribe"));
         assertEquals(CustomMessage.START_UNSUBSCRIBE_MESSAGE.getText(), sendMessage.getText());
     }
 
@@ -108,7 +108,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-success.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
         assertEquals("Тикет `IN-243` отписан", sendMessage.getText());
     }
 
@@ -118,7 +118,7 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
         assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
     }
 
@@ -128,8 +128,27 @@ public class HandleMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
-        SendMessage sendMessage = handleMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
         assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
+    }
+
+    @Test
+    @DisplayName("Send invalid code ticket to unsubscribe in exist chat")
+    void test10() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
+        assertEquals(CustomMessage.VALID_ERROR_MESSAGE.getText(), sendMessage.getText());
+    }
+
+    @Test
+    @DisplayName("Send invalid command in exist chat")
+    void test11() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/comand"));
+        assertEquals(CustomMessage.EMPTY_MESSAGE.getText(), sendMessage.getText());
     }
     private void setResponse(MappingBuilder post, String name) throws IOException {
         mockServer.stubFor(post
@@ -138,7 +157,7 @@ public class HandleMessageTests {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withBody(
                                 copyToString(
-                                        HandleMessageTests.class
+                                        HandlerMessageTests.class
                                                 .getClassLoader()
                                                 .getResourceAsStream(name),
                                         defaultCharset()))));

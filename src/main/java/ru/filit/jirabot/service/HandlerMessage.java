@@ -21,7 +21,7 @@ import ru.filit.jirabot.model.type.StatusCode;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class HandleMessage {
+public class HandlerMessage {
 
 
     private final NotificationClientApp notificationClientApp;
@@ -51,11 +51,7 @@ public class HandleMessage {
             return unsubscribe(message.getChatId().toString(), inputMessage);
         }
 
-        return SendMessage.builder()
-                .chatId(message.getChatId())
-                .parseMode("Markdown")
-                .text("hello")
-                .build();
+        return messageMapper.customMessage(message.getChatId().toString(), String.format(CustomMessage.EMPTY_MESSAGE.getText(), inputMessage));
     }
 
     private SendMessage unsubscribe(String chatId, String inputMessage) {
