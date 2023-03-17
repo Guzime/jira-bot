@@ -68,7 +68,7 @@ public class HandleMessage {
             log.info("Ticket {} unsubscribe", inputMessage);
             return messageMapper.customMessage(chatId, String.format(CustomMessage.UNSUBSCRIBE_SUCCESS_MESSAGE.getText(), inputMessage));
         }
-        return messageMapper.customMessage(chatId, String.format(CustomMessage.UNSUBSCRIBE_NOT_FOUND_MESSAGE.getText(), inputMessage));
+        return messageMapper.customMessage(chatId, String.format(CustomMessage.VALID_ERROR_MESSAGE.getText(), inputMessage));
     }
 
     private SendMessage startUnsubscribe(Message message) {

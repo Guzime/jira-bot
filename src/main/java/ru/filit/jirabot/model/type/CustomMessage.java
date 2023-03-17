@@ -11,6 +11,7 @@ public enum CustomMessage {
     SUBSCRIBE_LIST_MESSAGE("Этот чат подписан на тикеты:"),
     UNSUBSCRIBE_SUCCESS_MESSAGE("Тикет `%s` отписан"),
     UNSUBSCRIBE_NOT_FOUND_MESSAGE("Тикета `%s` нету в списке подписок"),
+    VALID_ERROR_MESSAGE("Шляпу написал \uD83D\uDE21"),
     HELP_MESSAGE("Бог в помощь \uD83D\uDE4F"),
     SUBSCRIBE_LIST_FORMAT_MESSAGE("\n[%s](%s) статус - `%s`");
 

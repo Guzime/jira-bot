@@ -121,6 +121,16 @@ public class HandleMessageTests {
         SendMessage sendMessage = handleMessage.parseCommand(getMessage("IN-243"));
         assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
     }
+
+    @Test
+    @DisplayName("Send not found code ticket to unsubscribe in exist chat")
+    void test9() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
+
+        SendMessage sendMessage = handleMessage.parseCommand(getMessage("IN-243"));
+        assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
+    }
     private void setResponse(MappingBuilder post, String name) throws IOException {
         mockServer.stubFor(post
                 .willReturn(WireMock.aResponse()
