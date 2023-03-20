@@ -28,4 +28,7 @@ public interface NotificationClientApp {
 
     @GetMapping("/unsubscribe/{code}")
     IssueInfoDto unsubscribeIssue(@PathVariable("code") String code);
+
+    @GetMapping("/subscribe/{code}")
+    IssueInfoDto subscribeIssue(@PathVariable("code") String code);
 }

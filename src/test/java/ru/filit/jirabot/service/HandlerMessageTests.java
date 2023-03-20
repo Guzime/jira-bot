@@ -31,10 +31,7 @@ import static org.springframework.util.StreamUtils.copyToString;
 @ContextConfiguration(classes = {WireMockConfiguration.class})
 public class HandlerMessageTests {
     public static final String TELEGRAM_ID = "231852649";
-    public static final String SUBSCRIBE_LIST_MESSAGE = "Этот чат подписан на тикеты:\n" +
-            "[IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`\n" +
-            "[KMB-892](https://jirahq.rosbank.rus.socgen:8443/browse/KMB-892) статус - `Testing`\n" +
-            "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243) статус - `Backlog`";
+
     @Autowired
     private WireMockServer mockServer;
 
@@ -89,7 +86,10 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/list/" + TELEGRAM_ID)), "payload/response-chat-list-data-many.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe_list"));
-        assertEquals(SUBSCRIBE_LIST_MESSAGE, sendMessage.getText());
+        assertEquals("Этот чат подписан на тикеты:\n" +
+                "[IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`\n" +
+                "[KMB-892](https://jirahq.rosbank.rus.socgen:8443/browse/KMB-892) статус - `Testing`\n" +
+                "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243) статус - `Backlog`", sendMessage.getText());
     }
 
     @Test
@@ -150,6 +150,42 @@ public class HandlerMessageTests {
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/comand"));
         assertEquals(CustomMessage.EMPTY_MESSAGE.getText(), sendMessage.getText());
     }
+
+    @Test
+    @DisplayName("Send valid code ticket to subscribe in exist chat")
+    void test12() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-already-exist.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        assertEquals("Дружище! этот чат чат уже подписан на тикет - `IN-243`\n" +
+                "глянь список всех подписанных тикетов", sendMessage.getText());
+    }
+
+    @Test
+    @DisplayName("Send invalid code ticket to subscribe in exist chat")
+    void test13() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-already-exist.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
+        assertEquals(CustomMessage.VALID_ERROR_MESSAGE.getText(), sendMessage.getText());
+    }
+
+    @Test
+    @DisplayName("Send valid code ticket to subscribe success")
+    void test14() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-success.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        assertEquals("Подписываюсь на тикет:\n" +
+                "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243)\n" +
+                "Статус\n" +
+                "`Backlog`",
+                sendMessage.getText());
+    }
+
     private void setResponse(MappingBuilder post, String name) throws IOException {
         mockServer.stubFor(post
                 .willReturn(WireMock.aResponse()

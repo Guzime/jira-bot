@@ -9,11 +9,7 @@ import ru.filit.jirabot.api.NotificationClientApp;
 import ru.filit.jirabot.mapper.ChatInfoMapper;
 import ru.filit.jirabot.mapper.SendMessageMapper;
 import ru.filit.jirabot.model.dto.chat.ChatDto;
-import ru.filit.jirabot.model.dto.chat.ChatInfo;
-import ru.filit.jirabot.model.dto.issue.IssueInfo;
 import ru.filit.jirabot.model.dto.issue.IssueInfoDto;
-import ru.filit.jirabot.model.dto.issue.IssueListDto;
-import ru.filit.jirabot.model.type.ChatCommand;
 import ru.filit.jirabot.model.type.ChatStatus;
 import ru.filit.jirabot.model.type.CustomMessage;
 import ru.filit.jirabot.model.type.StatusCode;
@@ -27,28 +23,24 @@ public class HandlerMessage {
     private final NotificationClientApp notificationClientApp;
     private final SendMessageMapper messageMapper;
     private final ChatInfoMapper chatInfoMapper;
+    private final HandlerCommandMessage handlerCommandMessage;
 
     public static final String JIRA_URL = "https://jirahq.rosbank.rus.socgen:8443/browse/";
 
     public SendMessage parseCommand(Message message){
         ChatDto chat = fetchChatStatus(message);
-
         String inputMessage = message.getText();
-        if (inputMessage.split("@")[0].equals(ChatCommand.SUBSCRIBE.getName())) {
-            return startSubscribe(message);
-        }
-        if (inputMessage.split("@")[0].equals(ChatCommand.SUBSCRIBE_LIST.getName())) {
-            return listSubscribe(message);
-        }
-        if (inputMessage.split("@")[0].equals(ChatCommand.UNSUBSCRIBE.getName())) {
-            return startUnsubscribe(message);
-        }
-        if (inputMessage.split("@")[0].equals(ChatCommand.HELP.getName())) {
-            return  messageMapper.customMessage(message.getChatId().toString(), CustomMessage.HELP_MESSAGE.getText());
+        SendMessage responseForCommand = handlerCommandMessage.parse(message);
+        if (!responseForCommand.getText().equals(CustomMessage.EMPTY_MESSAGE.getText())) {
+            return responseForCommand;
         }
 
         if (chat.getData().getStatus().equals(ChatStatus.START_UNSUBSCRIBE.name())) {
             return unsubscribe(message.getChatId().toString(), inputMessage);
+        }
+
+        if (chat.getData().getStatus().equals(ChatStatus.START_SUBSCRIBE.name())) {
+            return subscribe(message.getChatId().toString(), inputMessage);
         }
 
         return messageMapper.customMessage(message.getChatId().toString(), String.format(CustomMessage.EMPTY_MESSAGE.getText(), inputMessage));
@@ -67,28 +59,23 @@ public class HandlerMessage {
         return messageMapper.customMessage(chatId, String.format(CustomMessage.VALID_ERROR_MESSAGE.getText(), inputMessage));
     }
 
-    private SendMessage startUnsubscribe(Message message) {
-        log.info("Processing UNSUBSCRIBE for chat: {}, {}", message.getChatId(), message.getChat().getTitle());
-        notificationClientApp.updateChat(message.getChatId().toString(), ChatInfo.builder().status(ChatStatus.START_UNSUBSCRIBE.name()).build());
-        return messageMapper.customMessage(message.getChatId().toString(), CustomMessage.START_UNSUBSCRIBE_MESSAGE.getText());
-    }
-
-    private SendMessage listSubscribe(Message message) {
-        String textMessage = CustomMessage.SUBSCRIBE_LIST_MESSAGE.getText();
-        IssueListDto issues = notificationClientApp.getIssues(message.getChatId().toString());
-        for (IssueInfo issue : issues.getData()) {
-            textMessage += (String.format(CustomMessage.SUBSCRIBE_LIST_FORMAT_MESSAGE.getText(),
-                    issue.getCode(),
-                    JIRA_URL + issue.getCode(),
-                    issue.getStatus()));
+    private SendMessage subscribe(String chatId, String inputMessage) {
+        if (inputMessage.split("-").length == 2) {
+            IssueInfoDto issueSubscribe = notificationClientApp.subscribeIssue(inputMessage);
+            if (StatusCode.JBOT_004.getCode().equals(issueSubscribe.getResult().getCode())) {
+                log.info("Ticket {} already exist", inputMessage);
+                return messageMapper.customMessage(chatId, String.format(CustomMessage.SUBSCRIBE_ALREADY_EXIST_MESSAGE.getText(), inputMessage));
+            }
+            if (StatusCode.JBOT_001.getCode().equals(issueSubscribe.getResult().getCode())) {
+                log.info("Ticket {} success subscribe", inputMessage);
+                return messageMapper.customMessage(chatId,
+                        String.format(CustomMessage.SUBSCRIBE_SUCCESS_MESSAGE.getText(),
+                                inputMessage,
+                                JIRA_URL + inputMessage,
+                                issueSubscribe.getData().getStatus()));
+            }
         }
-        return messageMapper.customMessage(message.getChatId().toString(), textMessage);
-    }
-
-    public SendMessage startSubscribe(Message message) {
-        log.info("Processing SUBSCRIBE for chat: {}, {}", message.getChatId(), message.getChat().getTitle());
-        notificationClientApp.updateChat(message.getChatId().toString(), ChatInfo.builder().status(ChatStatus.START_SUBSCRIPE.name()).build());
-        return messageMapper.customMessage(message.getChatId().toString(), CustomMessage.START_SUBSCRIBE_MESSAGE.getText());
+        return messageMapper.customMessage(chatId, String.format(CustomMessage.VALID_ERROR_MESSAGE.getText(), inputMessage));
     }
 
     public ChatDto fetchChatStatus(Message message) {

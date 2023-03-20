@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.filit.jirabot.api.NotificationClientApp;
-import ru.filit.jirabot.mapper.ChatInfoMapper;
 import ru.filit.jirabot.mapper.SendMessageMapper;
 import ru.filit.jirabot.model.dto.chat.ChatInfo;
 import ru.filit.jirabot.model.dto.issue.IssueInfo;
@@ -18,7 +17,7 @@ import ru.filit.jirabot.model.type.CustomMessage;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class HandlerCommand {
+public class HandlerCommandMessage {
 
     private final NotificationClientApp notificationClientApp;
     private final SendMessageMapper messageMapper;
@@ -60,7 +59,7 @@ public class HandlerCommand {
 
     public SendMessage startSubscribe(Message message) {
         log.info("Processing SUBSCRIBE for chat: {}, {}", message.getChatId(), message.getChat().getTitle());
-        notificationClientApp.updateChat(message.getChatId().toString(), ChatInfo.builder().status(ChatStatus.START_SUBSCRIPE.name()).build());
+        notificationClientApp.updateChat(message.getChatId().toString(), ChatInfo.builder().status(ChatStatus.START_SUBSCRIBE.name()).build());
         return messageMapper.customMessage(message.getChatId().toString(), CustomMessage.START_SUBSCRIBE_MESSAGE.getText());
     }
 }
