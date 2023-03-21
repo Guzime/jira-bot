@@ -16,8 +16,8 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.filit.jirabot.api.NotificationClientApp;
 import ru.filit.jirabot.config.WireMockConfiguration;
-import ru.filit.jirabot.model.dto.chat.ChatDto;
-import ru.filit.jirabot.model.type.CustomMessage;
+import ru.filit.jirabot.model.type.ChatStatus;
+import ru.filit.jirabot.model.type.CustomMsg;
 
 import java.io.IOException;
 
@@ -54,8 +54,8 @@ public class HandlerMessageTests {
     void test2() throws IOException {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        ChatDto chat = handlerMessage.fetchChatStatus(getInputMessage());
-        assertEquals(TELEGRAM_ID, chat.getData().getTelegramId());
+        ChatStatus status = handlerMessage.fetchChatStatus(getInputMessage());
+        assertEquals(ChatStatus.HOLD, status);
     }
 
 
@@ -65,8 +65,8 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-not-found.json");
         setResponse(WireMock.post(WireMock.urlEqualTo("/chat")), "payload/response-chat-data-success.json");
 
-        ChatDto chat = handlerMessage.fetchChatStatus(getInputMessage());
-        assertEquals(TELEGRAM_ID, chat.getData().getTelegramId());
+        ChatStatus status = handlerMessage.fetchChatStatus(getInputMessage());
+        assertEquals(ChatStatus.HOLD, status);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe"));
-        assertEquals(CustomMessage.START_SUBSCRIBE_MESSAGE.getText(), sendMessage.getText());
+        assertEquals(CustomMsg.START_SUB.getText(), sendMessage.getText());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/unsubscribe"));
-        assertEquals(CustomMessage.START_UNSUBSCRIBE_MESSAGE.getText(), sendMessage.getText());
+        assertEquals(CustomMsg.START_UNSUB.getText(), sendMessage.getText());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
-        assertEquals(CustomMessage.VALID_ERROR_MESSAGE.getText(), sendMessage.getText());
+        assertEquals(CustomMsg.VALID_ERROR.getText(), sendMessage.getText());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/comand"));
-        assertEquals(CustomMessage.EMPTY_MESSAGE.getText(), sendMessage.getText());
+        assertEquals(CustomMsg.EMPTY.getText(), sendMessage.getText());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-already-exist.json");
 
         SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
-        assertEquals(CustomMessage.VALID_ERROR_MESSAGE.getText(), sendMessage.getText());
+        assertEquals(CustomMsg.VALID_ERROR.getText(), sendMessage.getText());
     }
 
     @Test
@@ -183,6 +183,18 @@ public class HandlerMessageTests {
                 "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243)\n" +
                 "Статус\n" +
                 "`Backlog`",
+                sendMessage.getText());
+    }
+
+    @Test
+    @DisplayName("Send valid code ticket to subscribe error Jira")
+    void test15() throws IOException {
+        setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
+        setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-error.json");
+
+        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        assertEquals("Дружище! этот чат чат уже подписан на тикет - `IN-243`\n" +
+                        "глянь список всех подписанных тикетов",
                 sendMessage.getText());
     }
 

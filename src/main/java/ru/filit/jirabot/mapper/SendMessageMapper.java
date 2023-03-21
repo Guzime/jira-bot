@@ -8,7 +8,7 @@ public class SendMessageMapper {
 
     public static final String MARKDOWN = "Markdown";
 
-    public SendMessage customMessage(String chatId, String text) {
+    public SendMessage formatText(String chatId, String text) {
         return SendMessage.builder()
                 .chatId(chatId)
                 .parseMode(MARKDOWN)
