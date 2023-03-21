@@ -24,7 +24,7 @@ public class HandlerMessage {
     private final HandlerCommandMessage handlerCommandMessage;
     private final HandlerCustomMessage handlerCustomMessage;
 
-    public SendMessage parseCommand(Message message) {
+    public SendMessage parse(Message message) {
         ChatStatus status = fetchChatStatus(message);
         String inputMessage = message.getText();
         SendMessage responseForCommand = handlerCommandMessage.parse(message);

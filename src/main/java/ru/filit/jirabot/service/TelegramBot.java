@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.filit.jirabot.config.BotConfig;
+import ru.filit.jirabot.model.type.CustomMsg;
 
 import java.util.Objects;
 
@@ -36,8 +38,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Message message = update.getMessage();
                 log.info("Get message: {}", message);
                 log.info("Get message: {} , from user: {}", message.getText(), message.getFrom().getUserName());
-                //execute(handlerMessage.parseCommand(message));
-                execute(handlerMessage.parseCommand(message));
+                SendMessage sendMessage = handlerMessage.parse(message);
+                if (!sendMessage.getText().equals(CustomMsg.EMPTY.getText())) {
+                    execute(sendMessage);
+                }
             }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);

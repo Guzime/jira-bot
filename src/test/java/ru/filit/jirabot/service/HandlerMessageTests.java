@@ -75,7 +75,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("/subscribe"));
         assertEquals(CustomMsg.START_SUB.getText(), sendMessage.getText());
     }
 
@@ -85,7 +85,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/list/" + TELEGRAM_ID)), "payload/response-chat-list-data-many.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/subscribe_list"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("/subscribe_list"));
         assertEquals("Этот чат подписан на тикеты:\n" +
                 "[IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`\n" +
                 "[KMB-892](https://jirahq.rosbank.rus.socgen:8443/browse/KMB-892) статус - `Testing`\n" +
@@ -98,7 +98,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
         setResponse(WireMock.patch(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/unsubscribe"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("/unsubscribe"));
         assertEquals(CustomMsg.START_UNSUB.getText(), sendMessage.getText());
     }
 
@@ -108,7 +108,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-success.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Тикет `IN-243` отписан", sendMessage.getText());
     }
 
@@ -118,7 +118,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
     }
 
@@ -128,7 +128,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Тикета `IN-243` нету в списке подписок", sendMessage.getText());
     }
 
@@ -138,7 +138,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-unsub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/unsubscribe/IN-243")), "payload/response-unsubscribe-not-found.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN243"));
         assertEquals(CustomMsg.VALID_ERROR.getText(), sendMessage.getText());
     }
 
@@ -147,7 +147,7 @@ public class HandlerMessageTests {
     void test11() throws IOException {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-success.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("/comand"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("/comand"));
         assertEquals(CustomMsg.EMPTY.getText(), sendMessage.getText());
     }
 
@@ -157,7 +157,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-already-exist.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Дружище! этот чат чат уже подписан на тикет - `IN-243`\n" +
                 "глянь список всех подписанных тикетов", sendMessage.getText());
     }
@@ -168,7 +168,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-already-exist.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN243"));
         assertEquals(CustomMsg.VALID_ERROR.getText(), sendMessage.getText());
     }
 
@@ -178,7 +178,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-success.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Подписываюсь на тикет:\n" +
                 "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243)\n" +
                 "Статус\n" +
@@ -192,7 +192,7 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/chat/" + TELEGRAM_ID)), "payload/response-chat-data-status-sub.json");
         setResponse(WireMock.get(WireMock.urlEqualTo("/subscribe/IN-243")), "payload/response-subscribe-error.json");
 
-        SendMessage sendMessage = handlerMessage.parseCommand(getMessage("IN-243"));
+        SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
         assertEquals("Дружище! этот чат чат уже подписан на тикет - `IN-243`\n" +
                         "глянь список всех подписанных тикетов",
                 sendMessage.getText());
