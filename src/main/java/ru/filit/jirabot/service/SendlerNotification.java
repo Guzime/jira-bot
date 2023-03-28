@@ -47,6 +47,41 @@ public class SendlerNotification {
     }
 
     public ResponseNotification sendIssueNotification(IssueNotificationDto notificationDto) {
+        try {
+            for (Long id : notificationDto.getTelegramsId()) {
+                if (notificationDto.getChangedDescription()) {
+                    SendMessage message = SendMessage.builder()
+                            .chatId(id)
+                            .text(String.format("*Описание тикета* [%s](%s) *поменяли!*",
+                                    notificationDto.getCode() + " " + notificationDto.getTitle(),
+                                    JIRA_URL + notificationDto.getCode()))
+                            .build();
+                    bot.execute(message);
+                }
+                if (notificationDto.getChangedTitle()) {
+                    SendMessage message = SendMessage.builder()
+                            .chatId(id)
+                            .text(String.format("*Заголовок тикета* [%s](%s) *поменяли!*",
+                                    notificationDto.getCode(),
+                                    JIRA_URL + notificationDto.getCode()))
+                            .build();
+                    bot.execute(message);
+                }
+                if (!notificationDto.getStatus().equals(notificationDto.getStatusPrevious())) {
+                    SendMessage message = SendMessage.builder()
+                            .chatId(id)
+                            .text(String.format("*Статус тикета* [%s](%s) *поменяли!* \n\nБыло: _%s_ \nСтало: _%s_",
+                                    notificationDto.getCode(),
+                                    JIRA_URL + notificationDto.getCode(),
+                                    notificationDto.getStatusPrevious(),
+                                    notificationDto.getStatus()))
+                            .build();
+                    bot.execute(message);
+                }
+            }
+        } catch (TelegramApiException e) {
+            return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_007));
+        }
         return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_001));
     }
 }
