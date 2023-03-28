@@ -47,6 +47,4 @@ public class HandlerMessage {
         }
         return ChatStatus.valueOf(chat.getData().getStatus());
     }
-
-
 }
