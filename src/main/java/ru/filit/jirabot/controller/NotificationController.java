@@ -19,14 +19,14 @@ public class NotificationController {
     @PostMapping("/comment")
     @ResponseStatus(HttpStatus.OK)
     public ResponseNotification sendCommentNotification(@RequestBody CommentsNotificationDto notificationDto) {
-        log.info("lol");
+        log.info("Accept request to sendCommentNotification : {}", notificationDto);
         return sendlerNotification.sendCommentNotification(notificationDto);
     }
 
     @PostMapping("/issue")
     @ResponseStatus(HttpStatus.OK)
     public ResponseNotification sendIssueNotification(@RequestBody IssueNotificationDto notificationDto) {
-        log.info("lol2");
+        log.info("Accept request to sendIssueNotification : {}", notificationDto);
         return sendlerNotification.sendIssueNotification(notificationDto);
     }
 

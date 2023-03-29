@@ -1,9 +1,5 @@
 server:
   port: '8082'
-#  level:
-#    org:
-#      hibernate:
-#        type: trace
 logging:
   config: 'classpath:logback.xml'
   level:
@@ -27,23 +23,3 @@ log4j:
   appender:
     myappender:
       encoding: UTF-8
-
-
-url:
-  notification-app:
-    chat: http://localhost:8080
-  jira:
-    issue:
-      info: 'https://jirahq.rosbank.rus.socgen:8443/rest/api/2/issue'
-      info-fil-it: 'https://jira.phoenixit.ru/rest/api/2/issue'
-
-
-jira:
-  rosbank:
-    username: 'rbxMOS001670'
-    password: 'Qwerty123456'
-    url: 'https://jirahq.rosbank.rus.socgen:8443'
-  fil-it:
-    username: 'ntolmachev'
-    password: 'Forblachok1!'
-    url: 'https://jira.phoenixit.ru'

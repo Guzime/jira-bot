@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.filit.jirabot.api.NotificationClientApp;
 import ru.filit.jirabot.mapper.SendMessageMapper;
 import ru.filit.jirabot.model.dto.ResponseResult;
+import ru.filit.jirabot.model.dto.chat.ChatInfo;
 import ru.filit.jirabot.model.dto.issue.IssueInfoDto;
 import ru.filit.jirabot.model.type.ChatStatus;
 import ru.filit.jirabot.model.type.CustomMsg;
@@ -35,6 +36,7 @@ public class HandlerCustomMessage {
     private SendMessage unsubscribe(String chatId, String inputMessage) {
         if (validateIssueCode(inputMessage)) {
             IssueInfoDto issueUnsubscribe = notificationClientApp.unsubscribeIssue(Long.valueOf(chatId), inputMessage);
+            notificationClientApp.addChat(ChatInfo.builder().telegramId(Long.valueOf(chatId)).status(ChatStatus.HOLD.name()).build());
             if (StatusCode.JBOT_003.equals(getResponseCode(issueUnsubscribe.getResult()))) {
                 return issueNotFound(chatId, inputMessage);
             }
@@ -47,6 +49,7 @@ public class HandlerCustomMessage {
         if (validateIssueCode(inputMessage)) {
             IssueInfoDto issueSubscribe = notificationClientApp.subscribeIssue(Long.valueOf(chatId), inputMessage);
             StatusCode responseCode = getResponseCode(issueSubscribe.getResult());
+            notificationClientApp.addChat(ChatInfo.builder().telegramId(Long.valueOf(chatId)).status(ChatStatus.HOLD.name()).build());
             log.info("Response for subscribe: {}", issueSubscribe);
 
             switch (responseCode) {

@@ -27,7 +27,7 @@ public class SendlerNotification {
             for (Long id : notificationDto.getTelegramsId()) {
                 List<SendMessage> messages = new ArrayList<>();
                 for (CommentNotificationDto comment : notificationDto.getComments()) {
-                    messages.add(SendMessage.builder()
+                    SendMessage message = SendMessage.builder()
                             .chatId(id)
                             .text(String.format("В тикете [%s](%s)\n`%s`\nдобавил _комментарий:_\n `%s`",
                                     notificationDto.getCode(),
@@ -35,9 +35,12 @@ public class SendlerNotification {
                                     comment.getAuthor(),
                                     comment.getDescription()))
                             .parseMode("Markdown")
-                            .build());
+                            .build();
+                    log.info("Send message: {}, to chat: {}", message, id);
+                    messages.add(message);
                 }
                 for (SendMessage message : messages) {
+
                     bot.execute(message);
                 }
             }
@@ -58,6 +61,7 @@ public class SendlerNotification {
                                     JIRA_URL + notificationDto.getCode()))
                             .parseMode("Markdown")
                             .build();
+                    log.info("Send message: {}, to chat: {}", message, id);
                     bot.execute(message);
                 }
                 if (notificationDto.getChangedTitle()) {
@@ -68,6 +72,7 @@ public class SendlerNotification {
                                     JIRA_URL + notificationDto.getCode()))
                             .parseMode("Markdown")
                             .build();
+                    log.info("Send message: {}, to chat: {}", message, id);
                     bot.execute(message);
                 }
                 if (!notificationDto.getStatus().equals(notificationDto.getStatusPrevious())) {
@@ -80,6 +85,7 @@ public class SendlerNotification {
                                     notificationDto.getStatus()))
                             .parseMode("Markdown")
                             .build();
+                    log.info("Send message: {}, to chat: {}", message, id);
                     bot.execute(message);
                 }
             }
