@@ -12,10 +12,10 @@ public class ChatInfoMapper {
 
     public ChatInfo newChatInfo(Message message) {
         return ChatInfo.builder()
-                .type(message.getChat().getType())
+                .type(message.getChat().getType().toUpperCase())
                 .status(ChatStatus.HOLD.name())
                 .title(Objects.isNull(message.getChat().getTitle()) ? message.getChat().getUserName() : message.getChat().getTitle())
-                .telegramId(message.getChatId().toString())
+                .telegramId(message.getChatId())
                 .build();
     }
 }

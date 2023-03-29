@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class SendlerNotification {
-    private static final Object JIRA_URL = "https://jirahq.rosbank.rus.socgen:8443/browse/";
+    private static final String JIRA_URL = "https://jirahq.rosbank.rus.socgen:8443/browse/";
     private final TelegramBot bot;
 
     public ResponseNotification sendCommentNotification(CommentsNotificationDto notificationDto) {
@@ -34,6 +34,7 @@ public class SendlerNotification {
                                     JIRA_URL + notificationDto.getCode(),
                                     comment.getAuthor(),
                                     comment.getDescription()))
+                            .parseMode("Markdown")
                             .build());
                 }
                 for (SendMessage message : messages) {
@@ -55,6 +56,7 @@ public class SendlerNotification {
                             .text(String.format("*Описание тикета* [%s](%s) *поменяли!*",
                                     notificationDto.getCode() + " " + notificationDto.getTitle(),
                                     JIRA_URL + notificationDto.getCode()))
+                            .parseMode("Markdown")
                             .build();
                     bot.execute(message);
                 }
@@ -64,6 +66,7 @@ public class SendlerNotification {
                             .text(String.format("*Заголовок тикета* [%s](%s) *поменяли!*",
                                     notificationDto.getCode(),
                                     JIRA_URL + notificationDto.getCode()))
+                            .parseMode("Markdown")
                             .build();
                     bot.execute(message);
                 }
@@ -75,6 +78,7 @@ public class SendlerNotification {
                                     JIRA_URL + notificationDto.getCode(),
                                     notificationDto.getStatusPrevious(),
                                     notificationDto.getStatus()))
+                            .parseMode("Markdown")
                             .build();
                     bot.execute(message);
                 }

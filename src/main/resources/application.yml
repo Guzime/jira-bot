@@ -1,5 +1,5 @@
 server:
-  port: '8081'
+  port: '8082'
 #  level:
 #    org:
 #      hibernate:
@@ -31,7 +31,7 @@ log4j:
 
 url:
   notification-app:
-    chat: http://localhost:9561/
+    chat: http://localhost:8080
   jira:
     issue:
       info: 'https://jirahq.rosbank.rus.socgen:8443/rest/api/2/issue'

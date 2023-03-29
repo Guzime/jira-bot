@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class CommentNotificationDto {
     @JsonProperty("author")
-    private Long author;
+    private String author;
     @JsonProperty("description")
     private String description;
 }

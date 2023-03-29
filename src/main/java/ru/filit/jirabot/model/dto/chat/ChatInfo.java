@@ -7,12 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatInfo {
     @JsonProperty("telegramId")
-    private String telegramId;
+    private Long telegramId;
     @JsonProperty("title")
     private String title;
     @JsonProperty("type")

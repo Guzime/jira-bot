@@ -34,7 +34,7 @@ public class HandlerCustomMessage {
 
     private SendMessage unsubscribe(String chatId, String inputMessage) {
         if (validateIssueCode(inputMessage)) {
-            IssueInfoDto issueUnsubscribe = notificationClientApp.unsubscribeIssue(inputMessage);
+            IssueInfoDto issueUnsubscribe = notificationClientApp.unsubscribeIssue(Long.valueOf(chatId), inputMessage);
             if (StatusCode.JBOT_003.equals(getResponseCode(issueUnsubscribe.getResult()))) {
                 return issueNotFound(chatId, inputMessage);
             }
@@ -45,7 +45,7 @@ public class HandlerCustomMessage {
 
     private SendMessage subscribe(String chatId, String inputMessage) {
         if (validateIssueCode(inputMessage)) {
-            IssueInfoDto issueSubscribe = notificationClientApp.subscribeIssue(inputMessage);
+            IssueInfoDto issueSubscribe = notificationClientApp.subscribeIssue(Long.valueOf(chatId), inputMessage);
             StatusCode responseCode = getResponseCode(issueSubscribe.getResult());
             log.info("Response for subscribe: {}", issueSubscribe);
 

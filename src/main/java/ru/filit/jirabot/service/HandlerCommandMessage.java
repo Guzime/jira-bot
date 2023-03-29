@@ -46,7 +46,7 @@ public class HandlerCommandMessage {
 
     private SendMessage startUnsubscribe(String chatId) {
         log.info("Processing UNSUBSCRIBE for chat: {}", chatId);
-        notificationClientApp.updateChat(chatId, ChatInfo.builder().status(ChatStatus.START_UNSUBSCRIBE.name()).build());
+        notificationClientApp.addChat(ChatInfo.builder().telegramId(Long.valueOf(chatId)).status(ChatStatus.START_UNSUBSCRIBE.name()).build());
         return messageMapper.formatText(chatId, CustomMsg.START_UNSUB.getText());
     }
 
@@ -64,7 +64,7 @@ public class HandlerCommandMessage {
 
     public SendMessage startSubscribe(String chatId) {
         log.info("Processing SUBSCRIBE for chat: {}", chatId);
-        notificationClientApp.updateChat(chatId, ChatInfo.builder().status(ChatStatus.START_SUBSCRIBE.name()).build());
+        notificationClientApp.addChat(ChatInfo.builder().telegramId(Long.valueOf(chatId)).status(ChatStatus.START_SUBSCRIBE.name()).build());
         return messageMapper.formatText(chatId, CustomMsg.START_SUB.getText());
     }
 }
