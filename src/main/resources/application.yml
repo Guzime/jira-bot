@@ -23,3 +23,7 @@ log4j:
   appender:
     myappender:
       encoding: UTF-8
+
+url:
+  notification-app:
+    chat: http://localhost:8080
