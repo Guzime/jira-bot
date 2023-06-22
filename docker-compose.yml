@@ -40,4 +40,4 @@ services:
       - jira-bot-net
 networks:
   jira-bot-net:
-    driver: "bridge"
+    external: true
