@@ -26,4 +26,4 @@ log4j:
 
 url:
   notification-app:
-    chat: http://localhost:8080
+    chat: ${NOTIFICATION_APP_URL:"http://localhost:8080"}
