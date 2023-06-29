@@ -16,8 +16,8 @@ logging:
             MessageTracing:
               received: TRACE
 bot:
-  name: JiraSubscribeTestingBot
-  token: 6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
 
 log4j:
   appender:
