@@ -37,7 +37,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       NOTIFICATION_APP_URL: "notification-app:8080"
-      BOT_NAME: "JiraSubscribeTestingBot"
+      BOT_NAME: "JiraSubscriptionBot"
       BOT_TOKEN: "5938985813:AAGq_y_6-x9NrI4YiuxqtAdxh0tzh4yeDxo"
     networks:
       - jira-bot-net
