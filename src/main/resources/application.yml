@@ -16,8 +16,8 @@ logging:
             MessageTracing:
               received: TRACE
 bot:
-  name: ${BOT_NAME}
-  token: ${BOT_TOKEN}
+  name: ${BOT_NAME:JiraSubscribeTestingBot}
+  token: ${BOT_TOKEN:6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4}
 
 log4j:
   appender:
@@ -26,4 +26,4 @@ log4j:
 
 url:
   notification-app:
-    chat: ${NOTIFICATION_APP_URL:"http://localhost:8080"}
+    chat: ${NOTIFICATION_APP_URL:http://localhost:8080}

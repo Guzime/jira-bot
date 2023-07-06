@@ -11,6 +11,7 @@ public enum StatusCode {
     JBOT_003("JBOT_003", "Not found issue"),
     JBOT_004("JBOT_004", "Issue already exist"),
     JBOT_005("JBOT_005", "Error Jira"),
+    JBOT_006("JBOT_006", "Other error"),
     JBOT_007("JBOT_007", "Error sending to telegram bot");
 
     private final String code;
