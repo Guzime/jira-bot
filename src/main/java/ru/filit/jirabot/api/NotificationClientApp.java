@@ -8,7 +8,7 @@ import ru.filit.jirabot.model.dto.chat.ChatInfo;
 import ru.filit.jirabot.model.dto.issue.IssueInfoDto;
 import ru.filit.jirabot.model.dto.issue.IssueListDto;
 
-@FeignClient(name = "NotificationClientApp", url = "${url.notification-app.chat}", configuration = FeignConfig.class)
+@FeignClient(name = "NotificationClientApp", url = "${url.notification-app}", configuration = FeignConfig.class)
 public interface NotificationClientApp {
     @GetMapping("/notification/chat/telegram/{chatId}")
     ChatDto getChat(@PathVariable("chatId") String chatId);

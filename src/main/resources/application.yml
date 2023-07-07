@@ -14,15 +14,10 @@ logging:
           server:
             MessageTracing:
               received: TRACE
+url:
+  notification-app: ${NOTIFICATION_APP_URL:http://localhost:8080}
+
 bot:
   name: ${BOT_NAME:JiraSubscribeTestingBot}
   token: ${BOT_TOKEN:6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4}
 
-log4j:
-  appender:
-    myappender:
-      encoding: UTF-8
-
-url:
-  notification-app:
-    chat: ${NOTIFICATION_APP_URL:http://localhost:8080}
