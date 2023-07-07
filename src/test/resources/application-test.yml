@@ -18,5 +18,4 @@ bot:
   token: ${BOT_TOKEN:6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4}
 
 url:
-  notification-app:
-    chat: http://localhost:9561/
+  notification-app: http://localhost:9561/

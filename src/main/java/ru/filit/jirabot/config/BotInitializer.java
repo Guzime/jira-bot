@@ -1,5 +1,6 @@
 package ru.filit.jirabot.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,10 +14,10 @@ import ru.filit.jirabot.service.TelegramBot;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class BotInitializer {
 
-    @Autowired
-    TelegramBot bot;
+    private final TelegramBot bot;
 
     @EventListener({ContextRefreshedEvent.class})
     public  void init() throws TelegramApiException {

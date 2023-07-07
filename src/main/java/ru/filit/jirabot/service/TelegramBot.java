@@ -1,8 +1,8 @@
 package ru.filit.jirabot.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -14,12 +14,13 @@ import ru.filit.jirabot.model.type.CustomMsg;
 import java.util.Objects;
 
 @Slf4j
-@Component
+@Service
+@RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
-    @Autowired
-    private BotConfig config;
-    @Autowired
-    private HandlerMessage handlerMessage;
+
+    private final BotConfig config;
+    private final HandlerMessage handlerMessage;
+
     @Override
     public String getBotUsername() {
         return config.getBotName();
@@ -29,7 +30,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return config.getToken();
     }
-
 
     @Override
     public void onUpdateReceived(Update update) {
