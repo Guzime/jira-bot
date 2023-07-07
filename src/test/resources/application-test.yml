@@ -1,5 +1,4 @@
 logging:
-  config: 'classpath:logback.xml'
   level:
     org:
       springframework:
