@@ -40,7 +40,6 @@ public class SendlerNotification {
                     messages.add(message);
                 }
                 for (SendMessage message : messages) {
-
                     bot.execute(message);
                 }
             }
