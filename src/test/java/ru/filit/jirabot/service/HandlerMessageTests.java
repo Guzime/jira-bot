@@ -86,11 +86,10 @@ public class HandlerMessageTests {
         setResponse(WireMock.get(WireMock.urlEqualTo("/notification/issue/telegram/" + TELEGRAM_ID)), "payload/response-chat-list-data-many.json");
 
         SendMessage sendMessage = handlerMessage.parse(getMessage("/subscribe_list"));
-        assertEquals("""
-                Этот чат подписан на тикеты:
-                [IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`
-                [KMB-892](https://jirahq.rosbank.rus.socgen:8443/browse/KMB-892) статус - `Testing`
-                [IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243) статус - `Backlog`""", sendMessage.getText());
+        assertEquals("Этот чат подписан на тикеты:\n" +
+                "[IN-229](https://jirahq.rosbank.rus.socgen:8443/browse/IN-229) статус - `Backlog`\n" +
+                "[KMB-892](https://jirahq.rosbank.rus.socgen:8443/browse/KMB-892) статус - `Testing`\n" +
+                "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243) статус - `Backlog`", sendMessage.getText());
     }
 
     @Test
@@ -186,11 +185,10 @@ public class HandlerMessageTests {
         setResponse(WireMock.patch(WireMock.urlEqualTo("/notification/chat")), "payload/response-chat-data-success.json");
 
         SendMessage sendMessage = handlerMessage.parse(getMessage("IN-243"));
-        assertEquals("""
-                        Подписываюсь на тикет:
-                        [IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243)
-                        Статус
-                        `Backlog`""",
+        assertEquals("Подписываюсь на тикет:\n" +
+                        "[IN-243](https://jirahq.rosbank.rus.socgen:8443/browse/IN-243)\n" +
+                        "Статус\n" +
+                        "`Backlog`",
                 sendMessage.getText());
     }
 

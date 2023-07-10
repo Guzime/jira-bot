@@ -2,7 +2,7 @@ package ru.filit.jirabot.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.filit.jirabot.model.dto.notification.ResponseNotification;
 import ru.filit.jirabot.model.dto.notification.comment.CommentsNotificationDto;
@@ -17,17 +17,15 @@ public class NotificationController {
     private final SendlerNotification sendlerNotification;
 
     @PostMapping("/comment")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseNotification sendCommentNotification(@RequestBody CommentsNotificationDto notificationDto) {
+    public ResponseEntity<ResponseNotification> sendCommentNotification(@RequestBody CommentsNotificationDto notificationDto) {
         log.info("Accept request to sendCommentNotification : {}", notificationDto);
-        return sendlerNotification.sendCommentNotification(notificationDto);
+        return ResponseEntity.ok(sendlerNotification.sendCommentNotification(notificationDto));
     }
 
     @PostMapping("/issue")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseNotification sendIssueNotification(@RequestBody IssueNotificationDto notificationDto) {
+    public ResponseEntity<ResponseNotification> sendIssueNotification(@RequestBody IssueNotificationDto notificationDto) {
         log.info("Accept request to sendIssueNotification : {}", notificationDto);
-        return sendlerNotification.sendIssueNotification(notificationDto);
+        return ResponseEntity.ok(sendlerNotification.sendIssueNotification(notificationDto));
     }
 
 }
