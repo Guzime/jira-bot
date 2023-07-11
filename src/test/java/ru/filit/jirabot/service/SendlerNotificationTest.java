@@ -8,6 +8,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.filit.jirabot.mapper.SendMessageMapper;
 import ru.filit.jirabot.model.dto.notification.ResponseNotification;
+import ru.filit.jirabot.model.dto.notification.comment.CommentNotificationDto;
+import ru.filit.jirabot.model.dto.notification.comment.CommentsNotificationDto;
 import ru.filit.jirabot.model.dto.notification.issue.IssueNotificationDto;
 import ru.filit.jirabot.model.type.StatusCode;
 
@@ -40,8 +42,7 @@ class SendlerNotificationTest {
     @DisplayName("Send Message execute success")
     void test2() {
         IssueNotificationDto request = getIssueAllChangeNotificationDto();
-        List<SendMessage> messages = sendlerNotification.fetchIssueSendMessages(request);
-        ResponseNotification responseNotification = sendlerNotification.sendAllMessages(messages);
+        ResponseNotification responseNotification = sendlerNotification.sendIssueNotification(request);
 
         assertThat(StatusCode.valueOf(responseNotification.getResult().getCode())).isEqualTo(StatusCode.JBOT_001);
     }
@@ -57,7 +58,7 @@ class SendlerNotificationTest {
     }
 
     @Test
-    @DisplayName("Count 4 Send Message for two chats")
+    @DisplayName("Count 4 Send Message with issue notification for 2 chats")
     void test4() {
         IssueNotificationDto request = getIssueAllChangeNotificationDto();
         List<SendMessage> messages = sendlerNotification.fetchIssueSendMessages(request);
@@ -66,13 +67,31 @@ class SendlerNotificationTest {
     }
 
     @Test
-    @DisplayName("Count 2 Send Message for two chats")
+    @DisplayName("Count 2 Send Message with issue notification for 2 chats")
     void test5() {
         IssueNotificationDto request = getIssueStatusNotificationDto();
         List<SendMessage> messages = sendlerNotification.fetchIssueSendMessages(request);
 
         assertThat(messages.size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("Count 4 Send Message with comment notification for two chats")
+    void test6() {
+        CommentsNotificationDto request = getCommentsRequestDto();
+        List<SendMessage> messages = sendlerNotification.fetchCommentSendMessages(request);
+
+        assertThat(messages.size()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("Send comment notification")
+    void test7() {
+        CommentsNotificationDto request = getCommentsRequestDto();
+        ResponseNotification response = sendlerNotification.sendCommentNotification(request);
+        assertThat(StatusCode.valueOf(response.getResult().getCode())).isEqualTo(StatusCode.JBOT_001);
+    }
+
 
     private IssueNotificationDto getIssueAllChangeNotificationDto() {
         return IssueNotificationDto.builder()
@@ -95,6 +114,16 @@ class SendlerNotificationTest {
                 .statusPrevious("Done")
                 .changedDescription(false)
                 .changedTitle(false)
+                .build();
+    }
+
+    private CommentsNotificationDto getCommentsRequestDto() {
+        return CommentsNotificationDto.builder()
+                .telegramsId(new HashSet<>(Arrays.asList(231852649L, -851899839L)))
+                .code("IN-219")
+                .comments(new HashSet<>(Arrays.asList(
+                        new CommentNotificationDto("Толмач", "Что-то пошло не так"),
+                        new CommentNotificationDto("Бородач", "Что-то пошло определенно так"))))
                 .build();
     }
 }

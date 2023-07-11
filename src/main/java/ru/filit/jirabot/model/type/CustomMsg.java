@@ -17,6 +17,10 @@ public enum CustomMsg {
     EMPTY("EMPTY"),
     VALID_ERROR("Шляпу написал \uD83D\uDE21"),
     HELP("Бог в помощь \uD83D\uDE4F"),
+    DESCRIPTION_CHANGE("*Описание тикета* [%s](%s) *поменяли!*"),
+    TITLE_CHANGE("*Заголовок тикета* [%s](%s) *поменяли!*"),
+    STATUS_CHANGE("*Статус тикета* [%s](%s) *поменяли!* \n\nБыло: _%s_ \nСтало: _%s_"),
+    ADD_COMMENT("В тикете [%s](%s)\n`%s`\nдобавил _комментарий:_\n `%s`"),
     SUB_LIST_FORMAT("\n[%s](%s) статус - `%s`");
 
     private final String text;

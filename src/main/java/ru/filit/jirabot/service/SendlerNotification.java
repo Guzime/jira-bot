@@ -11,10 +11,16 @@ import ru.filit.jirabot.model.dto.notification.ResponseNotification;
 import ru.filit.jirabot.model.dto.notification.comment.CommentNotificationDto;
 import ru.filit.jirabot.model.dto.notification.comment.CommentsNotificationDto;
 import ru.filit.jirabot.model.dto.notification.issue.IssueNotificationDto;
+import ru.filit.jirabot.model.type.CustomMsg;
 import ru.filit.jirabot.model.type.StatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.filit.jirabot.model.type.CustomMsg.DESCRIPTION_CHANGE;
+import static ru.filit.jirabot.model.type.CustomMsg.TITLE_CHANGE;
+import static ru.filit.jirabot.model.type.CustomMsg.STATUS_CHANGE;
+import static ru.filit.jirabot.model.type.CustomMsg.ADD_COMMENT;
 
 @Service
 @Slf4j
@@ -25,30 +31,8 @@ public class SendlerNotification {
     private final SendMessageMapper messageMapper;
 
     public ResponseNotification sendCommentNotification(CommentsNotificationDto notificationDto) {
-        try {
-            for (Long id : notificationDto.getTelegramsId()) {
-                List<SendMessage> messages = new ArrayList<>();
-                for (CommentNotificationDto comment : notificationDto.getComments()) {
-                    SendMessage message = SendMessage.builder()
-                            .chatId(id)
-                            .text(String.format("В тикете [%s](%s)\n`%s`\nдобавил _комментарий:_\n `%s`",
-                                    notificationDto.getCode(),
-                                    JIRA_URL + notificationDto.getCode(),
-                                    comment.getAuthor(),
-                                    comment.getDescription()))
-                            .parseMode("Markdown")
-                            .build();
-                    log.info("Send message: {}, to chat: {}", message, id);
-                    messages.add(message);
-                }
-                for (SendMessage message : messages) {
-                    bot.execute(message);
-                }
-            }
-        } catch (TelegramApiException e) {
-            return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_007));
-        }
-        return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_001));
+        List<SendMessage> messages = fetchCommentSendMessages(notificationDto);
+        return sendAllMessages(messages);
     }
 
     public ResponseNotification sendIssueNotification(IssueNotificationDto notificationDto) {
@@ -56,47 +40,43 @@ public class SendlerNotification {
         return sendAllMessages(messages);
     }
 
+    public List<SendMessage> fetchCommentSendMessages(CommentsNotificationDto notificationDto) {
+        List<SendMessage> messages = new ArrayList<>();
+        for (Long id : notificationDto.getTelegramsId()) {
+            for (CommentNotificationDto comment : notificationDto.getComments()) {
+                addSendMessage(messages, id,
+                        String.format(ADD_COMMENT.getText(),
+                                notificationDto.getCode(),
+                                JIRA_URL + notificationDto.getCode(),
+                                comment.getAuthor(),
+                                comment.getDescription()));
+            }
+        }
+        return messages;
+    }
+
     public List<SendMessage> fetchIssueSendMessages(IssueNotificationDto notificationDto) {
         List<SendMessage> messages = new ArrayList<>();
         for (Long id : notificationDto.getTelegramsId()) {
             if (notificationDto.getChangedDescription()) {
-                SendMessage message = SendMessage.builder()
-                        .chatId(id)
-                        .text(String.format("*Описание тикета* [%s](%s) *поменяли!*",
+                addSendMessage(messages, id,
+                        String.format(DESCRIPTION_CHANGE.getText(),
                                 notificationDto.getCode() + " " + notificationDto.getTitle(),
-                                JIRA_URL + notificationDto.getCode()))
-                        .parseMode("Markdown")
-                        .build();
-                /*messages.add(messageMapper.formatText(String.valueOf(id),
-                        String.format("*Описание тикета* [%s](%s) *поменяли!*",
-                                notificationDto.getCode() + " " + notificationDto.getTitle(),
-                                JIRA_URL + notificationDto.getCode())));*/
-                messages.add(message);
-                log.info("Add Send Message: {}, to chat: {}", message, id);
+                                JIRA_URL + notificationDto.getCode()));
             }
             if (notificationDto.getChangedTitle()) {
-                SendMessage message = SendMessage.builder()
-                        .chatId(id)
-                        .text(String.format("*Заголовок тикета* [%s](%s) *поменяли!*",
+                addSendMessage(messages, id,
+                        String.format(TITLE_CHANGE.getText(),
                                 notificationDto.getCode(),
-                                JIRA_URL + notificationDto.getCode()))
-                        .parseMode("Markdown")
-                        .build();
-                messages.add(message);
-                log.info("Add Send message: {}, to chat: {}", message, id);
+                                JIRA_URL + notificationDto.getCode()));
             }
             if (!notificationDto.getStatus().equals(notificationDto.getStatusPrevious())) {
-                SendMessage message = SendMessage.builder()
-                        .chatId(id)
-                        .text(String.format("*Статус тикета* [%s](%s) *поменяли!* \n\nБыло: _%s_ \nСтало: _%s_",
+                addSendMessage(messages, id,
+                        String.format(STATUS_CHANGE.getText(),
                                 notificationDto.getCode(),
                                 JIRA_URL + notificationDto.getCode(),
                                 notificationDto.getStatusPrevious(),
-                                notificationDto.getStatus()))
-                        .parseMode("Markdown")
-                        .build();
-                messages.add(message);
-                log.info("Add Send message: {}, to chat: {}", message, id);
+                                notificationDto.getStatus()));
             }
         }
         return messages;
@@ -112,5 +92,11 @@ public class SendlerNotification {
             return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_007));
         }
         return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_001));
+    }
+
+    private void addSendMessage(List<SendMessage> messages, Long id, String text ) {
+        SendMessage message = messageMapper.formatText(String.valueOf(id), text);
+        messages.add(message);
+        log.info("Add Send message: {}, to chat: {}", message, id);
     }
 }
