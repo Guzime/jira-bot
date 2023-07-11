@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.filit.jirabot.mapper.SendMessageMapper;
 import ru.filit.jirabot.model.dto.ResponseResult;
 import ru.filit.jirabot.model.dto.notification.ResponseNotification;
 import ru.filit.jirabot.model.dto.notification.comment.CommentNotificationDto;
@@ -21,6 +22,7 @@ import java.util.List;
 public class SendlerNotification {
     private static final String JIRA_URL = "https://jirahq.rosbank.rus.socgen:8443/browse/";
     private final TelegramBot bot;
+    private final SendMessageMapper messageMapper;
 
     public ResponseNotification sendCommentNotification(CommentsNotificationDto notificationDto) {
         try {
@@ -50,45 +52,63 @@ public class SendlerNotification {
     }
 
     public ResponseNotification sendIssueNotification(IssueNotificationDto notificationDto) {
+        List<SendMessage> messages = fetchIssueSendMessages(notificationDto);
+        return sendAllMessages(messages);
+    }
+
+    public List<SendMessage> fetchIssueSendMessages(IssueNotificationDto notificationDto) {
+        List<SendMessage> messages = new ArrayList<>();
+        for (Long id : notificationDto.getTelegramsId()) {
+            if (notificationDto.getChangedDescription()) {
+                SendMessage message = SendMessage.builder()
+                        .chatId(id)
+                        .text(String.format("*Описание тикета* [%s](%s) *поменяли!*",
+                                notificationDto.getCode() + " " + notificationDto.getTitle(),
+                                JIRA_URL + notificationDto.getCode()))
+                        .parseMode("Markdown")
+                        .build();
+                /*messages.add(messageMapper.formatText(String.valueOf(id),
+                        String.format("*Описание тикета* [%s](%s) *поменяли!*",
+                                notificationDto.getCode() + " " + notificationDto.getTitle(),
+                                JIRA_URL + notificationDto.getCode())));*/
+                messages.add(message);
+                log.info("Add Send Message: {}, to chat: {}", message, id);
+            }
+            if (notificationDto.getChangedTitle()) {
+                SendMessage message = SendMessage.builder()
+                        .chatId(id)
+                        .text(String.format("*Заголовок тикета* [%s](%s) *поменяли!*",
+                                notificationDto.getCode(),
+                                JIRA_URL + notificationDto.getCode()))
+                        .parseMode("Markdown")
+                        .build();
+                messages.add(message);
+                log.info("Add Send message: {}, to chat: {}", message, id);
+            }
+            if (!notificationDto.getStatus().equals(notificationDto.getStatusPrevious())) {
+                SendMessage message = SendMessage.builder()
+                        .chatId(id)
+                        .text(String.format("*Статус тикета* [%s](%s) *поменяли!* \n\nБыло: _%s_ \nСтало: _%s_",
+                                notificationDto.getCode(),
+                                JIRA_URL + notificationDto.getCode(),
+                                notificationDto.getStatusPrevious(),
+                                notificationDto.getStatus()))
+                        .parseMode("Markdown")
+                        .build();
+                messages.add(message);
+                log.info("Add Send message: {}, to chat: {}", message, id);
+            }
+        }
+        return messages;
+    }
+
+    public ResponseNotification sendAllMessages(List<SendMessage> messages) {
         try {
-            for (Long id : notificationDto.getTelegramsId()) {
-                if (notificationDto.getChangedDescription()) {
-                    SendMessage message = SendMessage.builder()
-                            .chatId(id)
-                            .text(String.format("*Описание тикета* [%s](%s) *поменяли!*",
-                                    notificationDto.getCode() + " " + notificationDto.getTitle(),
-                                    JIRA_URL + notificationDto.getCode()))
-                            .parseMode("Markdown")
-                            .build();
-                    log.info("Send message: {}, to chat: {}", message, id);
-                    bot.execute(message);
-                }
-                if (notificationDto.getChangedTitle()) {
-                    SendMessage message = SendMessage.builder()
-                            .chatId(id)
-                            .text(String.format("*Заголовок тикета* [%s](%s) *поменяли!*",
-                                    notificationDto.getCode(),
-                                    JIRA_URL + notificationDto.getCode()))
-                            .parseMode("Markdown")
-                            .build();
-                    log.info("Send message: {}, to chat: {}", message, id);
-                    bot.execute(message);
-                }
-                if (!notificationDto.getStatus().equals(notificationDto.getStatusPrevious())) {
-                    SendMessage message = SendMessage.builder()
-                            .chatId(id)
-                            .text(String.format("*Статус тикета* [%s](%s) *поменяли!* \n\nБыло: _%s_ \nСтало: _%s_",
-                                    notificationDto.getCode(),
-                                    JIRA_URL + notificationDto.getCode(),
-                                    notificationDto.getStatusPrevious(),
-                                    notificationDto.getStatus()))
-                            .parseMode("Markdown")
-                            .build();
-                    log.info("Send message: {}, to chat: {}", message, id);
-                    bot.execute(message);
-                }
+            for (SendMessage message : messages) {
+                bot.execute(message);
             }
         } catch (TelegramApiException e) {
+            log.error("Telegram Error: {}", e.getMessage());
             return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_007));
         }
         return new ResponseNotification(new ResponseResult(200, StatusCode.JBOT_001));
