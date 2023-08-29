@@ -1,0 +1,15 @@
+{
+  "data": {
+    "telegramId": "231852649",
+    "title": "tolmachevski",
+    "type": "private",
+    "status": "HOLD"
+  },
+  "result": {
+    "timestamp": "2023-03-01T15:38:40.793",
+    "status": 200,
+    "code": "JBOT_001",
+    "message": "Success",
+    "id": "73ef43db-25ea-4282-b124-9eda69430e3a"
+  }
+}

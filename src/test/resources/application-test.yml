@@ -1,5 +1,3 @@
-server:
-  port: '8082'
 logging:
   level:
     org:
@@ -14,10 +12,10 @@ logging:
           server:
             MessageTracing:
               received: TRACE
-url:
-  notification-app: ${NOTIFICATION_APP_URL:http://localhost:8080}
 
 bot:
   name: ${BOT_NAME:JiraSubscribeTestingBot}
   token: ${BOT_TOKEN:6236905174:AAGAHoA8u4Q0Gm8fH_I0WehACevppSsnQF4}
 
+url:
+  notification-app: http://localhost:9561/

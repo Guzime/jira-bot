@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "bot.name",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "bot.token",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "url.notification-app",
+      "type": "java.lang.String"
+    }
+  ]
+}

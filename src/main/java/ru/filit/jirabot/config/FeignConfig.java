@@ -12,10 +12,4 @@ public class FeignConfig {
     public Client client() {
         return new Http2Client();
     }
-
-    @Bean
-    public BasicAuthRequestInterceptor basicAuthRequestInterceptor() {
-        return new BasicAuthRequestInterceptor("rbxMOS003307", "Siebel202211");
-        //return new BasicAuthRequestInterceptor("ntolmachev", "Forblachok1!");
-    }
 }

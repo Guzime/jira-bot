@@ -10,6 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 public enum ChatCommand {
     SUBSCRIBE("/subscribe"),
+    DEF("/def"),
     HELP ("/help"),
     UNSUBSCRIBE("/unsubscribe"),
     SUBSCRIBE_LIST("/subscribe_list");
@@ -26,7 +27,7 @@ public enum ChatCommand {
 
     public static ChatCommand findByName(String name) {
         if (!map.containsKey(name)) {
-            throw new EnumConstantNotPresentException(ChatCommand.class, name);
+            return DEF;
         }
         return map.get(name);
     }
